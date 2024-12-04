@@ -1,0 +1,429 @@
+wav_id     = selected("Sound")
+dur_sonido = Get total duration
+
+form etiquetas
+  word caso
+  sentence enunciado
+  sentence topic
+  boolean top_exp 0
+  sentence focus
+  boolean interrupciones 0
+  boolean pausa 0
+  boolean alargamiento 0
+  positive n_roles 1
+  positive n_accent 3
+  word c_type
+  word sub_type
+  word paratono
+  word paquete
+  boolean final 0
+  word rol_1
+  word estatus_1
+  word rol_2
+  word estatus_2
+  word rol_3
+  word estatus_3
+endform
+
+Rename: caso$
+#guardar el wav
+#path$ = "indicar carpeta de destino"
+Save as WAV file: path$ + caso$ + ".wav"
+
+tgd_id = To TextGrid: "ENUN IS ROL EST ACC", ""
+
+top_exp$        = string$(top_exp)
+interrupciones$ = string$(interrupciones)
+pausa$          = string$(pausa)
+alargamiento$   = string$(alargamiento)
+final$          = string$(final)
+
+Set interval text: 1, 1, enunciado$
+
+#etiquetar IS
+dur_intervalo_IS = (dur_sonido/5)
+if top_exp == 0 
+  for h from 1 to 2
+    Insert boundary: 2, dur_intervalo_IS*h
+  endfor
+  Set interval text: 2, 2, focus$
+elsif top_exp == 1 
+  for h from 1 to 4
+    Insert boundary: 2, dur_intervalo_IS*h
+  endfor
+    Set interval text: 2, 2, topic$
+    Set interval text: 2, 4, focus$
+endif
+
+#etiquetar roles 
+if n_roles == 1
+  #insertar dos marcas y etiquetar
+  dur_intervalo = (dur_sonido/3)
+  for i from 1 to 2
+    Insert boundary: 3, dur_intervalo*i
+  endfor
+  Set interval text: 3, 2, rol_1$
+elsif n_roles == 2
+  dur_intervalo = (dur_sonido/5)
+  #insertar cuatro marcas y etiquetar
+  for i from 1 to 4
+    Insert boundary: 3, dur_intervalo*i
+  endfor
+  Set interval text: 3, 2, rol_1$
+  Set interval text: 3, 4, rol_2$
+elsif n_roles == 3
+  dur_intervalo = (dur_sonido/7)
+  #insertar cuatro marcas y etiquetar
+  for i from 1 to 6
+    Insert boundary: 3, dur_intervalo*i
+  endfor
+  Set interval text: 3, 2, rol_1$
+  Set interval text: 3, 4, rol_2$
+  Set interval text: 3, 6, rol_3$
+endif
+#etiquetar estatus 
+if n_roles == 1
+  #insertar dos marcas y etiquetar
+  dur_intervalo = (dur_sonido/3)
+  for i from 1 to 2
+    Insert boundary: 4, dur_intervalo*i
+  endfor
+  Set interval text: 4, 2, estatus_1$
+elsif n_roles == 2
+  dur_intervalo = (dur_sonido/5)
+  #insertar cuatro marcas y etiquetar
+  for i from 1 to 4
+    Insert boundary: 4, dur_intervalo*i
+  endfor
+  Set interval text: 4, 2, estatus_1$
+  Set interval text: 4, 4, estatus_2$
+elsif n_roles == 3
+  dur_intervalo = (dur_sonido/7)
+  #insertar cuatro marcas y etiquetar
+  for i from 1 to 6
+    Insert boundary: 4, dur_intervalo*i
+  endfor
+  Set interval text: 4, 2, estatus_1$
+  Set interval text: 4, 4, estatus_2$
+  Set interval text: 4, 6, estatus_3$
+endif
+
+if n_accent == 3
+  #insertar seis marcas
+  dur_intervalo = (dur_sonido/7)
+  for i from 1 to 6
+    Insert boundary: 5, dur_intervalo*i
+  Endfor
+
+  Set interval text: 5, 2, "PRE"
+  Set interval text: 5, 4, "TON"
+  Set interval text: 5, 6, "POS"
+
+elsif n_accent == 6
+  #insertar doce marcas
+  dur_intervalo = (dur_sonido/13)
+
+  for i from 1 to 12
+    Insert boundary: 5, dur_intervalo*i
+  endfor
+
+  Set interval text: 5, 2, "PRE"
+  Set interval text: 5, 4, "TON"
+  Set interval text: 5, 6, "POS"
+  Set interval text: 5, 8, "PRE"
+  Set interval text: 5, 10, "TON"
+  Set interval text: 5, 12, "POS"
+elsif n_accent == 9
+  #insertar doce marcas
+  dur_intervalo = (dur_sonido/19)
+
+  for i from 1 to 18
+    Insert boundary: 5, dur_intervalo*i
+  endfor
+
+  Set interval text: 5, 2, "PRE"
+  Set interval text: 5, 4, "TON"
+  Set interval text: 5, 6, "POS"
+  Set interval text: 5, 8, "PRE"
+  Set interval text: 5, 10, "TON"
+  Set interval text: 5, 12, "POS"
+  Set interval text: 5, 14, "PRE"
+  Set interval text: 5, 16, "TON"
+  Set interval text: 5, 18, "POS"
+endif
+
+pauseScript: "Edite el textGrid"
+
+#guardar el textGrid
+#path$ = "indicar carpeta de destino"
+Save as text file: path$ + caso$ + ".TextGrid"
+
+#Crear tabla para almacenar datos
+tab_id = Create Table with column names: caso$, 0, "EDAD SEXO HABLANTE MODO NUM ENUNCIADO TOPICO TOP-EXPL FOCO C-TYPE SUB-TYPE PAQUETE PARATONO FINAL INTERRUPCION FO FP FE TT TS RNTT RNTS RNF NAF NATT NATS ACF ACTT ACTS RIF RITT RITS RAF RATT RATS ALARG_FOC PAUSA_FOC PITCH_PRE_F PITCH_TON_F PITCH_POS_F PITCH_PRE_TT PITCH_TON_TT PITCH_POS_TT PITCH_PRE_TS PITCH_TON_TS PITCH_POS_TS DUR_PRE_F DUR_TON_F DUR_POS_F DUR_PRE_TT DUR_TON_TT DUR_POS_TT DUR_PRE_TS DUR_TON_TS DUR_POS_TS INT_PRE_F INT_TON_F INT_POS_F INT_PRE_TT INT_TON_TT INT_POS_TT INT_PRE_TS INT_TON_TS INT_POS_TS"
+
+#Abrir archivo wav e identificar sexo del hablante
+
+modo$    = mid$(caso$, 6, 3)
+sexo$    = mid$(caso$, 10, 1)
+age$     = mid$(caso$, 1, 4)
+speaker$ = mid$(caso$, 12, 2)
+number$  = mid$(caso$, 15, 2) 
+
+selectObject: tab_id
+Append row
+Set string value: 1, "EDAD", age$
+Set string value: 1, "SEXO", sexo$
+Set string value: 1, "HABLANTE", speaker$
+Set string value: 1, "MODO", modo$
+Set string value: 1, "ENUNCIADO", enunciado$
+Set string value: 1, "NUM", number$
+Set string value: 1, "TOPICO", topic$
+Set string value: 1, "TOP-EXPL", top_exp$
+Set string value: 1, "FOCO", focus$
+Set string value: 1, "INTERRUPCION", interrupciones$
+Set string value: 1, "C-TYPE", c_type$
+Set string value: 1, "SUB-TYPE", sub_type$
+Set string value: 1, "PAQUETE", paquete$
+Set string value: 1, "PARATONO", paratono$
+Set string value: 1, "FINAL", final$
+Set string value: 1, "PAUSA_FOC", pausa$
+Set string value: 1, "ALARG_FOC", alargamiento$
+
+#Floor y ceiling del Pitch 
+if age$ != "GrCr"
+  pitch_floor   = 40
+  pitch_ceiling = 800
+elsif age$ == "GrCr" & sexo$ == "F"
+  pitch_floor   = 100
+  pitch_ceiling = 600 
+elsif age$ == "GrCr" & sexo$ == "M"
+  pitch_floor   = 50
+  pitch_ceiling = 300
+endif
+
+#Crear objeto Pitch y obteto Intensity
+selectObject: wav_id
+f_0_id = To Pitch (cc): 0.0, pitch_floor, 15, "yes", 0.03, 0.45, 0.01, 0.35, 0.14, pitch_ceiling
+selectObject: wav_id
+int_id = To Intensity: pitch_floor, 0.0
+
+#etiquetas de rol
+selectObject: tgd_id
+n_intervals_rol = Get number of intervals: 3
+for i from 1 to n_intervals_rol
+  selectObject: tgd_id
+  rol$ = Get label of interval: 3, i
+  if rol$ != ""
+    column_rol$ = rol$  
+    selectObject: tab_id
+    Set numeric value: 1, column_rol$, 1
+  endif
+
+  selectObject: tgd_id
+  estatus$ = Get label of interval: 4, i
+  if estatus$ != ""
+    column_estatus$ = estatus$
+    selectObject: tab_id
+    Set numeric value: 1, column_estatus$, 1
+  endif
+endfor
+
+#Identificar número de intervalos para el segundo loop: 
+#extracción de datos de acento
+selectObject: tgd_id
+n_intervals_rol = Get number of intervals: 3
+for l from 1 to n_intervals_rol
+  selectObject: tgd_id
+  rol_label$  = Get label of interval: 3, l
+
+  if rol_label$ == "FO" or rol_label$ == "FP" or rol_label$ == "FE"
+    selectObject: tgd_id
+    start_interval  = Get start time of interval: 3, l
+    end_interval    = Get end time of interval: 3, l
+    ext_id          = Extract part: start_interval, end_interval, 3
+
+    selectObject: ext_id
+    ext_label$ = Get label of interval: 3, 1
+    n_accents  = Get number of intervals: 5
+
+    for k from 1 to n_accents
+      selectObject: ext_id
+      accent_label$ = Get label of interval: 5, k
+      start         = Get start time of interval: 5, k
+      end           = Get end time of interval: 5, k
+      dur           = end - start
+      
+      if accent_label$ == "PRE"
+        selectObject: tab_id
+        Set numeric value: 1, "DUR_PRE_F", dur
+
+        selectObject: f_0_id
+        pitch_avr = Get mean: start, end, "Hertz" 
+        
+        selectObject: tab_id
+        Set numeric value: 1, "PITCH_PRE_F", pitch_avr
+
+        selectObject: int_id
+        int_max = Get maximum: start, end, "parabolic" 
+        selectObject: tab_id
+        Set numeric value: 1, "INT_PRE_F", int_max
+
+      elsif accent_label$ == "TON" 
+        selectObject: tab_id
+        Set numeric value: 1, "DUR_TON_F", dur
+      
+        selectObject: f_0_id
+        pitch_avr = Get mean: start, end, "Hertz" 
+        selectObject: tab_id
+        Set numeric value: 1, "PITCH_TON_F", pitch_avr
+
+        selectObject: int_id
+        int_max = Get maximum: start, end, "parabolic" 
+        selectObject: tab_id
+        Set numeric value: 1, "INT_TON_F", int_max
+
+      elsif accent_label$ == "POS"
+        selectObject: tab_id
+        Set numeric value: 1, "DUR_POS_F", dur
+      
+        selectObject: f_0_id
+        pitch_avr = Get mean: start, end, "Hertz"
+        selectObject: tab_id
+        Set numeric value: 1, "PITCH_POS_F", pitch_avr
+
+        selectObject: int_id
+        int_max = Get maximum: start, end, "parabolic" 
+        selectObject: tab_id
+        Set numeric value: 1, "INT_POS_F", int_max
+      endif
+    endfor
+  endif  
+
+  if rol_label$ == "TT"
+    selectObject: tgd_id
+    start_interval  = Get start time of interval: 3, l
+    end_interval    = Get end time of interval: 3, l
+    ext_id          = Extract part: start_interval, end_interval, 3
+
+    selectObject: ext_id
+    ext_label$ = Get label of interval: 3, 1
+    n_accents  = Get number of intervals: 5
+
+    for k from 1 to n_accents
+      selectObject: ext_id
+      accent_label$ = Get label of interval: 5, k
+      start         = Get start time of interval: 5, k
+      end           = Get end time of interval: 5, k
+      dur           = end - start
+
+      if accent_label$ == "PRE"
+        selectObject: tab_id
+        Set numeric value: 1, "DUR_PRE_TT", dur
+      
+        selectObject: f_0_id
+        pitch_avr = Get mean: start, end, "Hertz"
+        selectObject: tab_id
+        Set numeric value: 1, "PITCH_PRE_TT", pitch_avr
+
+        selectObject: int_id
+        int_max = Get maximum: start, end, "parabolic" 
+        selectObject: tab_id
+        Set numeric value: 1, "INT_PRE_TT", int_max
+
+      elsif accent_label$ == "TON" 
+        selectObject: tab_id
+        Set numeric value: 1, "DUR_TON_TT", dur
+      
+        selectObject: f_0_id
+        pitch_avr = Get mean: start, end, "Hertz"
+        selectObject: tab_id
+        Set numeric value: 1, "PITCH_TON_TT", pitch_avr
+
+        selectObject: int_id
+        int_max = Get maximum: start, end, "parabolic" 
+        selectObject: tab_id
+        Set numeric value: 1, "INT_TON_TT", int_max
+
+      elsif accent_label$ == "POS"
+        selectObject: tab_id
+        Set numeric value: 1, "DUR_POS_TT", dur
+      
+        selectObject: f_0_id
+        pitch_avr = Get mean: start, end, "Hertz"
+        selectObject: tab_id
+        Set numeric value: 1, "PITCH_POS_TT", pitch_avr
+
+        selectObject: int_id
+        int_max = Get maximum: start, end, "parabolic" 
+        selectObject: tab_id
+        Set numeric value: 1, "INT_POS_TT", int_max
+      endif
+    endfor
+  endif 
+  if rol_label$ == "TS"
+    selectObject: tgd_id
+    start_interval  = Get start time of interval: 3, l
+    end_interval    = Get end time of interval: 3, l
+    ext_id          = Extract part: start_interval, end_interval, 3
+
+    selectObject: ext_id
+    ext_label$ = Get label of interval: 3, 1
+    n_accents  = Get number of intervals: 5
+
+    for k from 1 to n_accents
+      selectObject: ext_id
+      accent_label$ = Get label of interval: 5, k
+      start         = Get start time of interval: 5, k
+      end           = Get end time of interval: 5, k
+      dur           = end - start
+
+      if accent_label$ == "PRE"
+        selectObject: tab_id
+        Set numeric value: 1, "DUR_PRE_TS", dur
+      
+        selectObject: f_0_id
+        pitch_avr = Get mean: start, end, "Hertz"
+        selectObject: tab_id
+        Set numeric value: 1, "PITCH_PRE_TS", pitch_avr
+
+        selectObject: int_id
+        int_max = Get maximum: start, end, "parabolic" 
+        selectObject: tab_id
+        Set numeric value: 1, "INT_PRE_TS", int_max
+
+      elsif accent_label$ == "TON" 
+        selectObject: tab_id
+        Set numeric value: 1, "DUR_TON_TS", dur
+      
+        selectObject: f_0_id
+        pitch_avr = Get mean: start, end, "Hertz"
+        selectObject: tab_id
+        Set numeric value: 1, "PITCH_TON_TS", pitch_avr
+
+        selectObject: int_id
+        int_max = Get maximum: start, end, "parabolic" 
+        selectObject: tab_id
+        Set numeric value: 1, "INT_TON_TS", int_max
+
+      elsif accent_label$ == "POS"
+        selectObject: tab_id
+        Set numeric value: 1, "DUR_POS_TS", dur
+      
+        selectObject: f_0_id
+        pitch_avr = Get mean: start, end, "Hertz"
+        selectObject: tab_id
+        Set numeric value: 1, "PITCH_POS_TS", pitch_avr
+
+        selectObject: int_id
+        int_max = Get maximum: start, end, "parabolic" 
+        selectObject: tab_id
+        Set numeric value: 1, "INT_POS_TS", int_max
+      endif
+    endfor
+  endif
+endfor
+
+#guardar tabla
+selectObject: tab_id
+#path$ = "indicar carpeta de destino"
+Save as tab-separated file: path$ + caso$ + ".Table"
